@@ -56,7 +56,13 @@ Interfaces: `generateWeeklyCard(opts: {counts: WorkoutRow[], prs: PersonalRecord
 Test first: the unique constraint prevents a duplicate card if the cron fires twice for the same week; a free-tier user (no `plan='active'`) is skipped entirely, not just un-sent.
 Done when: both cases pass.
 
-## T10 — Frontend and deploy
-Files: `public/app.js`, `public/link.js`, `public/cards.js`, `public/styles.css`, `scripts/smoke.ts`.
+## T10 — Frontend: dashboard, linking flow, and progress cards
+Files: `public/app.js`, `public/link.js`, `public/cards.js`, `public/styles.css`.
+Interfaces: none new (calls `/api/*` from T3-T9).
+Test first: a simple string-match check that the "activity logging only, no diet or calorie guidance" statement appears on the landing page and pricing page.
+Done when: a user can generate a link code, see it reflected once a simulated WhatsApp message links their number, browse their workout history and PRs, and view the latest weekly card, against a local `wrangler dev` + real Supabase dev project.
+
+## T11 — Deploy, live smoke test, launch checklist
+Files: `scripts/smoke.ts`, deployment config.
 Interfaces: `smoke.ts` runs against the deployed URL: creates a link code, simulates a text-log webhook call, asserts a `workouts` row and (if it beats nothing) no spurious PR.
-Done when: `wrangler deploy` succeeds; `scripts/smoke.ts` passes; pricing page shows Rs149/mo + 15 free logs and the "activity logging only" guardrail statement; secrets set via `wrangler secret put`; WhatsApp Business verification confirmed (needed for the weekly-card template even though core logging doesn't require one).
+Done when: `wrangler deploy` succeeds; `scripts/smoke.ts` passes against production; pricing page shows Rs149/mo + 15 free logs and the "activity logging only" guardrail statement; secrets set via `wrangler secret put`; WhatsApp Business verification confirmed (needed for the weekly-card template even though core logging doesn't require one).
